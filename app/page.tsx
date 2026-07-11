@@ -18,7 +18,7 @@ export default function Home() {
       <Preloader />
       <Nav />
       <FullscreenMenu />
-      <main id="main">
+      <main id="main" tabIndex={-1}>
         <Hero />
         <Ticker />
         <Manifesto />

@@ -1,5 +1,7 @@
 /* Fullscreen menu overlay — slides down from the top, CSS-transition
-   driven by the .open class (menuOpen state). */
+   driven by the .open class (menuOpen state). visibility: hidden while
+   closed (delayed until the slide-up finishes) removes the hidden menu
+   from paint and stops its CSS animations from ticking. */
 .overlay {
   position: fixed;
   inset: 0;
@@ -11,13 +13,18 @@
   justify-content: center;
   padding: 110px clamp(20px, 6vw, 90px) 40px;
   transform: translateY(-100%);
-  transition: transform 0.8s var(--ease-inout);
+  visibility: hidden;
+  transition:
+    transform 0.8s var(--ease-inout),
+    visibility 0s 0.8s;
   will-change: transform;
   overflow: hidden;
 }
 
 .open {
   transform: translateY(0);
+  visibility: visible;
+  transition: transform 0.8s var(--ease-inout);
 }
 
 /* ---------- decor ---------- */
@@ -56,14 +63,28 @@
   background: radial-gradient(circle, rgba(224, 27, 27, 0.14), transparent 62%);
 }
 
+/* Sweeps top -> bottom like the global menuScan keyframes, but animates
+   transform instead of `top` (layout property). Base top: -4% parks the
+   line offscreen whenever the animation is not running (e.g. under
+   prefers-reduced-motion). */
 .scanline {
   position: absolute;
+  top: -4%;
   left: 0;
   right: 0;
   height: 2px;
   pointer-events: none;
   background: linear-gradient(90deg, transparent, rgba(224, 27, 27, 0.55), transparent);
-  animation: menuScan 4.5s linear infinite;
+  animation: scanSweep 4.5s linear infinite;
+}
+
+@keyframes scanSweep {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(108vh);
+  }
 }
 
 .status {
@@ -153,7 +174,7 @@
   font-size: 10.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(230, 232, 230, 0.45);
+  color: var(--ink-dim);
 }
 
 .footRight {

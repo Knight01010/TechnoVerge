@@ -21,19 +21,13 @@ export default function Ticker() {
     let target = 0;
     let current = 0;
     let raf = 0;
+    let running = false;
+    let attachRaf = 0;
     let attached: Lenis | null = null;
 
-    const onScroll = (e: Lenis) => {
-      target = -Math.max(-8, Math.min(8, (e.velocity || 0) * 0.55));
-    };
-
+    // Self-stopping spring: runs only while there is skew to animate, so the
+    // page does no rAF work when scrolling is idle.
     const loop = () => {
-      // Lenis is created in the provider's effect, which runs after this
-      // child effect — attach lazily once the instance exists.
-      if (!attached && lenisRef.current) {
-        attached = lenisRef.current;
-        attached.on('scroll', onScroll);
-      }
       target *= 0.92; // spring back toward rest
       current += (target - current) * 0.18;
       if (Math.abs(current) < 0.02 && Math.abs(target) < 0.02) {
@@ -41,15 +35,36 @@ export default function Ticker() {
           current = 0;
           el.style.transform = 'skewX(0deg)';
         }
-      } else {
-        el.style.transform = `skewX(${current.toFixed(3)}deg)`;
+        running = false;
+        return;
       }
+      el.style.transform = `skewX(${current.toFixed(3)}deg)`;
       raf = requestAnimationFrame(loop);
     };
-    raf = requestAnimationFrame(loop);
+
+    const onScroll = (e: Lenis) => {
+      target = -Math.max(-8, Math.min(8, (e.velocity || 0) * 0.55));
+      if (!running) {
+        running = true;
+        raf = requestAnimationFrame(loop);
+      }
+    };
+
+    // Lenis is created in the provider's effect, which runs after this
+    // child effect — retry until the instance exists, then attach once.
+    const tryAttach = () => {
+      if (lenisRef.current) {
+        attached = lenisRef.current;
+        attached.on('scroll', onScroll);
+        return;
+      }
+      attachRaf = requestAnimationFrame(tryAttach);
+    };
+    tryAttach();
 
     return () => {
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(attachRaf);
       if (attached) attached.off('scroll', onScroll);
       el.style.transform = '';
     };

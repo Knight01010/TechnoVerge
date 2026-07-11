@@ -13,7 +13,8 @@ Deps installed: `three`, `gsap` (with ScrollTrigger), `lenis`.
 - All copy/data comes from `@/lib/content` (already written — read it). Never hardcode copy that exists there.
 - Global CSS tokens available: `--bg --panel --panel-alt --ink --ink-dim --ink-faint --line --red --red-dim --font-display --font-mono --ease-out --ease-inout --pad-x`. Global keyframes: `blink pulseDot marquee spinSlow dashMove menuScan`. Use them; don't redeclare.
 - Shared context: `useApp()` from `@/components/providers/AppProviders`:
-  `{ lenisRef, menuOpen, toggleMenu, closeMenu, loaderDone, setLoaderDone, navigateTo(hash), reducedMotion }`.
+  `{ lenisRef, loaderDone, setLoaderDone, navigateTo(hash), reducedMotion }`.
+  Menu state lives in a separate `useMenu()` hook (same module): `{ menuOpen, toggleMenu, closeMenu }` — only Nav/FullscreenMenu should consume it.
   - `lenisRef.current` may be **null** (before mount / reduced motion) — guard.
   - Anchor `<a href="#...">` clicks are globally intercepted by the provider and run the red curtain transition — plain anchors just work; don't add your own smooth-scroll.
 - Scramble text util: `scramble(el, finalText, durationMs, onDone?)` from `@/lib/scramble` — returns cancel fn; cancel in cleanup.

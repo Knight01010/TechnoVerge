@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
+import type * as THREE from 'three';
 import { useApp } from '@/components/providers/AppProviders';
 import styles from './HeroShader.module.css';
 
@@ -12,6 +12,8 @@ import styles from './HeroShader.module.css';
  * required quality upgrades: dpr cap 1.6, ResizeObserver sizing, rAF paused
  * when the tab is hidden or the canvas scrolls offscreen, full disposal on
  * unmount, and a static CSS fallback when WebGL fails or reduced motion is on.
+ * three.js is imported on demand inside the effect so its ~550 KB chunk stays
+ * out of the critical bundle — it loads while the boot preloader is up.
  */
 
 const VERTEX_SHADER = 'void main(){gl_Position=vec4(position,1.0);}';
@@ -76,121 +78,142 @@ export default function HeroShader() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    let renderer: THREE.WebGLRenderer;
-    try {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
-    } catch {
-      // Flag WebGL failure asynchronously (lint: no sync setState in effect).
-      const id = window.setTimeout(() => setFailed(true), 0);
-      return () => window.clearTimeout(id);
-    }
+    let cancelled = false;
+    let cleanup: (() => void) | undefined;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    const uniforms: Uniforms = {
-      uTime: { value: 0 },
-      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-      uRes: { value: new THREE.Vector2(1, 1) },
-      uScroll: { value: 0 },
-    };
-    const material = new THREE.ShaderMaterial({
-      uniforms,
-      vertexShader: VERTEX_SHADER,
-      fragmentShader: FRAGMENT_SHADER,
-    });
-    const geometry = new THREE.PlaneGeometry(2, 2);
-    scene.add(new THREE.Mesh(geometry, material));
+    // Dynamic import keeps the three.js chunk out of the initial bundle;
+    // it resolves while the preloader still covers the hero.
+    import('three')
+      .then((THREE) => {
+        if (cancelled) return;
 
-    const size = () => {
-      const parent = canvas.parentElement;
-      const w = parent ? parent.clientWidth : window.innerWidth;
-      const h = parent ? parent.clientHeight : window.innerHeight;
-      if (w === 0 || h === 0) return;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
-      renderer.setSize(w, h);
-      uniforms.uRes.value.set(w, h);
-    };
-    size();
+        let renderer: THREE.WebGLRenderer;
+        try {
+          renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
+        } catch {
+          setFailed(true);
+          return;
+        }
 
-    // Resize via ResizeObserver on the parent (hero section).
-    const observed = canvas.parentElement ?? canvas;
-    const ro = new ResizeObserver(size);
-    ro.observe(observed);
+        const scene = new THREE.Scene();
+        const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        const uniforms: Uniforms = {
+          uTime: { value: 0 },
+          uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+          uRes: { value: new THREE.Vector2(1, 1) },
+          uScroll: { value: 0 },
+        };
+        const material = new THREE.ShaderMaterial({
+          uniforms,
+          vertexShader: VERTEX_SHADER,
+          fragmentShader: FRAGMENT_SHADER,
+        });
+        const geometry = new THREE.PlaneGeometry(2, 2);
+        scene.add(new THREE.Mesh(geometry, material));
 
-    // Mouse target (lerped in the loop, 0.05 per frame as in the design).
-    let tmx = 0.5;
-    let tmy = 0.5;
-    const onMouse = (e: MouseEvent) => {
-      tmx = e.clientX / window.innerWidth;
-      tmy = 1 - e.clientY / window.innerHeight;
-    };
-    window.addEventListener('mousemove', onMouse);
+        const size = () => {
+          const parent = canvas.parentElement;
+          const w = parent ? parent.clientWidth : window.innerWidth;
+          const h = parent ? parent.clientHeight : window.innerHeight;
+          if (w === 0 || h === 0) return;
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
+          renderer.setSize(w, h);
+          // uRes must match gl_FragCoord's space (the drawing buffer, in
+          // device pixels), not CSS pixels — otherwise uv spans 0..dpr and
+          // the scan beam / mouse glow / vignette break on dpr > 1 displays.
+          uniforms.uRes.value.set(canvas.width, canvas.height);
+        };
+        size();
 
-    // uScroll: hero scroll offset in viewport heights (design parity).
-    const onScroll = () => {
-      uniforms.uScroll.value = window.scrollY / Math.max(window.innerHeight, 1);
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
+        // Resize via ResizeObserver on the parent (hero section).
+        const observed = canvas.parentElement ?? canvas;
+        const ro = new ResizeObserver(size);
+        ro.observe(observed);
 
-    // rAF loop — paused when the tab is hidden or the canvas is offscreen.
-    let raf = 0;
-    let running = false;
-    let inView = true;
-    let pageVisible = !document.hidden;
-    let elapsed = 0;
-    let lastNow = 0;
+        // Mouse target (lerped in the loop, 0.05 per frame as in the design).
+        let tmx = 0.5;
+        let tmy = 0.5;
+        const onMouse = (e: MouseEvent) => {
+          tmx = e.clientX / window.innerWidth;
+          tmy = 1 - e.clientY / window.innerHeight;
+        };
+        window.addEventListener('mousemove', onMouse);
 
-    const loop = () => {
-      raf = requestAnimationFrame(loop);
-      const now = performance.now();
-      elapsed += (now - lastNow) / 1000;
-      lastNow = now;
-      uniforms.uTime.value = elapsed;
-      uniforms.uMouse.value.x += (tmx - uniforms.uMouse.value.x) * 0.05;
-      uniforms.uMouse.value.y += (tmy - uniforms.uMouse.value.y) * 0.05;
-      renderer.render(scene, camera);
-    };
-    const start = () => {
-      if (running) return;
-      running = true;
-      lastNow = performance.now();
-      raf = requestAnimationFrame(loop);
-    };
-    const stop = () => {
-      if (!running) return;
-      running = false;
-      cancelAnimationFrame(raf);
-    };
-    const sync = () => {
-      if (inView && pageVisible) start();
-      else stop();
-    };
+        // uScroll: hero scroll offset in viewport heights (design parity).
+        const onScroll = () => {
+          uniforms.uScroll.value =
+            window.scrollY / Math.max(window.innerHeight, 1);
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
 
-    const onVisibility = () => {
-      pageVisible = !document.hidden;
-      sync();
-    };
-    document.addEventListener('visibilitychange', onVisibility);
+        // rAF loop — paused when the tab is hidden or the canvas is offscreen.
+        let raf = 0;
+        let running = false;
+        let inView = true;
+        let pageVisible = !document.hidden;
+        let elapsed = 0;
+        let lastNow = 0;
 
-    const io = new IntersectionObserver((entries) => {
-      inView = entries[entries.length - 1]?.isIntersecting ?? true;
-      sync();
-    });
-    io.observe(canvas);
+        const loop = () => {
+          raf = requestAnimationFrame(loop);
+          const now = performance.now();
+          elapsed += (now - lastNow) / 1000;
+          lastNow = now;
+          uniforms.uTime.value = elapsed;
+          uniforms.uMouse.value.x += (tmx - uniforms.uMouse.value.x) * 0.05;
+          uniforms.uMouse.value.y += (tmy - uniforms.uMouse.value.y) * 0.05;
+          renderer.render(scene, camera);
+        };
+        const start = () => {
+          if (running) return;
+          running = true;
+          lastNow = performance.now();
+          raf = requestAnimationFrame(loop);
+        };
+        const stop = () => {
+          if (!running) return;
+          running = false;
+          cancelAnimationFrame(raf);
+        };
+        const sync = () => {
+          if (inView && pageVisible) start();
+          else stop();
+        };
 
-    sync();
+        const onVisibility = () => {
+          pageVisible = !document.hidden;
+          sync();
+        };
+        document.addEventListener('visibilitychange', onVisibility);
+
+        const io = new IntersectionObserver((entries) => {
+          inView = entries[entries.length - 1]?.isIntersecting ?? true;
+          sync();
+        });
+        io.observe(canvas);
+
+        sync();
+
+        cleanup = () => {
+          stop();
+          io.disconnect();
+          ro.disconnect();
+          document.removeEventListener('visibilitychange', onVisibility);
+          window.removeEventListener('mousemove', onMouse);
+          window.removeEventListener('scroll', onScroll);
+          geometry.dispose();
+          material.dispose();
+          renderer.dispose();
+        };
+      })
+      .catch(() => {
+        if (!cancelled) setFailed(true);
+      });
 
     return () => {
-      stop();
-      io.disconnect();
-      ro.disconnect();
-      document.removeEventListener('visibilitychange', onVisibility);
-      window.removeEventListener('mousemove', onMouse);
-      window.removeEventListener('scroll', onScroll);
-      geometry.dispose();
-      material.dispose();
-      renderer.dispose();
+      cancelled = true;
+      cleanup?.();
     };
   }, [reducedMotion, failed]);
 

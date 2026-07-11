@@ -91,7 +91,12 @@ export default function Hero() {
           {hero.badge}
         </div>
 
-        <h1 className={styles.headline}>
+        {/* Stable accessible name while the scramble animation mutates the
+            visible spans (same pattern as the menu links). */}
+        <h1
+          className={styles.headline}
+          aria-label={`${hero.line1} ${hero.line2Lead}${hero.line2Accent}`}
+        >
           <span className={styles.lineWrap}>
             <span ref={line1Ref} className={styles.line}>
               {hero.line1}

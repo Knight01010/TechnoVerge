@@ -2,9 +2,16 @@
   position: relative;
   z-index: 3;
   background: var(--red);
-  color: #050607;
+  /* White (not the design's black) for WCAG AA contrast on 15px text. */
+  color: #fff;
   overflow: hidden;
   padding: 13px 0;
+}
+
+/* WCAG 2.2.2: let users pause the auto-scrolling text. */
+.band:hover .track,
+.band:focus-within .track {
+  animation-play-state: paused;
 }
 
 .skew {

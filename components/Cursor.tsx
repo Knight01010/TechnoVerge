@@ -38,12 +38,44 @@ export default function Cursor() {
     let cx = -100;
     let cy = -100;
     let raf = 0;
+    let running = false;
     // With reduced motion the ring snaps instead of trailing.
     const lerp = reducedMotion ? 1 : 0.16;
+
+    // Both elements self-center via a trailing translate(-50%, -50%), so no
+    // layout reads are needed and the ring stays centered while its width
+    // transitions.
+    const render = () => {
+      dot.style.transform = `translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`;
+      ring.style.transform = `translate3d(${cx}px, ${cy}px, 0) translate(-50%, -50%)`;
+    };
+
+    // Self-stopping loop: once the ring has caught up with the pointer it
+    // parks itself instead of burning frames at idle; mousemove restarts it.
+    const loop = () => {
+      cx += (mx - cx) * lerp;
+      cy += (my - cy) * lerp;
+      if (Math.abs(mx - cx) < 0.1 && Math.abs(my - cy) < 0.1) {
+        cx = mx;
+        cy = my;
+        render();
+        running = false;
+        return;
+      }
+      render();
+      raf = requestAnimationFrame(loop);
+    };
+
+    const wake = () => {
+      if (running) return;
+      running = true;
+      raf = requestAnimationFrame(loop);
+    };
 
     const onMove = (e: MouseEvent) => {
       mx = e.clientX;
       my = e.clientY;
+      wake();
     };
 
     const onOver = (e: MouseEvent) => {
@@ -62,18 +94,9 @@ export default function Cursor() {
       }
     };
 
-    const loop = () => {
-      cx += (mx - cx) * lerp;
-      cy += (my - cy) * lerp;
-      dot.style.transform = `translate3d(${mx - 2.5}px, ${my - 2.5}px, 0)`;
-      const half = ring.offsetWidth / 2;
-      ring.style.transform = `translate3d(${cx - half}px, ${cy - half}px, 0)`;
-      raf = requestAnimationFrame(loop);
-    };
-
     window.addEventListener('mousemove', onMove);
     document.addEventListener('mouseover', onOver);
-    raf = requestAnimationFrame(loop);
+    render();
 
     return () => {
       window.removeEventListener('mousemove', onMove);

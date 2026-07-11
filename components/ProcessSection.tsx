@@ -99,7 +99,9 @@ export default function ProcessSection() {
       </div>
 
       <div className={styles.inner}>
-        <div className={styles.label}>{'/// the protocol'}</div>
+        <div className={styles.label} aria-hidden="true">
+          {'/// the protocol'}
+        </div>
         <h2 ref={headRef} className={styles.head}>
           A lifecycle,
           <br />

@@ -19,6 +19,26 @@ export default function Preloader() {
   const [sliding, setSliding] = useState(false);
   const [hidden, setHidden] = useState(false);
   const finishedRef = useRef(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  // While the opaque overlay covers the page, everything behind it must be
+  // unreachable by keyboard and screen readers — otherwise focus lands on
+  // invisible controls. Inert every body-level sibling until we hide.
+  useEffect(() => {
+    if (hidden) return;
+    const root = rootRef.current;
+    const affected: HTMLElement[] = [];
+    for (const el of Array.from(document.body.children)) {
+      if (!(el instanceof HTMLElement) || el === root || el.inert) continue;
+      el.inert = true;
+      affected.push(el);
+    }
+    return () => {
+      affected.forEach((el) => {
+        el.inert = false;
+      });
+    };
+  }, [hidden]);
 
   useEffect(() => {
     if (hidden) return;
@@ -90,8 +110,10 @@ export default function Preloader() {
   const tagParts = site.tagline.split(' × ');
 
   return (
-    <div className={`${styles.root} ${sliding ? styles.up : ''}`}>
-      <span className="sr-only">Loading {site.name}</span>
+    <div ref={rootRef} className={`${styles.root} ${sliding ? styles.up : ''}`}>
+      <span className="sr-only" role="status">
+        {sliding ? 'Site loaded' : `Loading ${site.name}`}
+      </span>
       <div aria-hidden="true" className={styles.topRow}>
         <span className={styles.brand}>
           <Image

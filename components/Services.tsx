@@ -16,14 +16,16 @@ import styles from './Services.module.css';
 export default function Services() {
   const { reducedMotion } = useApp();
   const sectionRef = useRef<HTMLElement | null>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const headRef = useRef<HTMLHeadingElement | null>(null);
 
   useEffect(() => {
     if (reducedMotion) return;
     const section = sectionRef.current;
+    const viewport = viewportRef.current;
     const track = trackRef.current;
-    if (!section || !track) return;
+    if (!section || !viewport || !track) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
@@ -63,16 +65,27 @@ export default function Services() {
     }, section);
 
     // Keep the section height in sync before ScrollTrigger measures.
+    // (ScrollTrigger's own debounced resize refresh + invalidateOnRefresh
+    // handle window resizes — no manual resize listener needed.)
     const onRefreshInit = () => size();
     ScrollTrigger.addEventListener('refreshInit', onRefreshInit);
-    const onResize = () => {
-      size();
-      ScrollTrigger.refresh();
+
+    // Keyboard focus (Tab to the CTA card) makes the browser scroll the
+    // overflow-hidden viewport, desyncing it from the scrubbed transform.
+    // Undo that scroll and seek the page to the scrub position instead.
+    const onFocusIn = (e: FocusEvent) => {
+      viewport.scrollLeft = 0;
+      const el = e.target instanceof HTMLElement ? e.target : null;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.left < 0 || rect.right > window.innerWidth) {
+        window.scrollTo(0, section.offsetTop + extra());
+      }
     };
-    window.addEventListener('resize', onResize);
+    viewport.addEventListener('focusin', onFocusIn);
 
     return () => {
-      window.removeEventListener('resize', onResize);
+      viewport.removeEventListener('focusin', onFocusIn);
       ScrollTrigger.removeEventListener('refreshInit', onRefreshInit);
       ctx.revert();
       section.style.height = '';
@@ -85,7 +98,7 @@ export default function Services() {
 
   return (
     <section id="services" ref={sectionRef} className={sectionClass}>
-      <div className={styles.viewport}>
+      <div ref={viewportRef} className={styles.viewport}>
         <div className={styles.dots} aria-hidden="true" />
         <div className={styles.ghost} aria-hidden="true">
           MODULES///

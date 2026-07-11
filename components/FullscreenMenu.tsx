@@ -3,13 +3,15 @@
 import { useCallback, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
-import { useApp } from '@/components/providers/AppProviders';
+import { useApp, useMenu } from '@/components/providers/AppProviders';
 import { menuLinks, site } from '@/lib/content';
 import { scramble } from '@/lib/scramble';
 import styles from './FullscreenMenu.module.css';
 
 export default function FullscreenMenu() {
-  const { menuOpen, closeMenu, reducedMotion } = useApp();
+  const { reducedMotion } = useApp();
+  const { menuOpen, closeMenu } = useMenu();
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const labelRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const hoverBusy = useRef<boolean[]>([]);
   const hoverCleanups = useRef<(() => void)[]>([]);
@@ -23,6 +25,52 @@ export default function FullscreenMenu() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [menuOpen, closeMenu]);
+
+  // Modal focus management: while open, move focus into the dialog, trap
+  // Tab within it, and make the page behind it inert; on close, restore
+  // focus to the trigger (the [ MENU ] button).
+  useEffect(() => {
+    if (!menuOpen) return;
+    const root = rootRef.current;
+    if (!root) return;
+
+    const prevFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const main = document.querySelector('main');
+    main?.setAttribute('inert', '');
+
+    const focusables = () =>
+      Array.from(root.querySelectorAll<HTMLAnchorElement>('a[href]'));
+    focusables()[0]?.focus({ preventScroll: true });
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const items = focusables();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (!(active instanceof HTMLElement) || !root.contains(active)) {
+        e.preventDefault();
+        first.focus({ preventScroll: true });
+      } else if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus({ preventScroll: true });
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus({ preventScroll: true });
+      }
+    };
+    document.addEventListener('keydown', onKey, true);
+
+    return () => {
+      document.removeEventListener('keydown', onKey, true);
+      main?.removeAttribute('inert');
+      prevFocus?.focus({ preventScroll: true });
+    };
+  }, [menuOpen]);
 
   // Open animation: labels slide up (stagger), then scramble in sequence.
   useEffect(() => {
@@ -85,16 +133,19 @@ export default function FullscreenMenu() {
       const t = window.setTimeout(() => {
         hoverBusy.current[i] = false;
       }, 500);
-      hoverCleanups.current.push(() => {
+      // Store per-index so each new hover overwrites the previous entry,
+      // keeping the array bounded at menuLinks.length.
+      hoverCleanups.current[i] = () => {
         cancel();
         window.clearTimeout(t);
-      });
+      };
     },
     [reducedMotion],
   );
 
   return (
     <div
+      ref={rootRef}
       id="fullscreen-menu"
       role="dialog"
       aria-modal="true"

@@ -132,7 +132,8 @@
   gap: 12px;
   padding: 17px 30px;
   background: var(--red);
-  color: #050607;
+  /* White (not the design's black) for WCAG AA contrast on 12px text. */
+  color: #fff;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -142,7 +143,7 @@
 }
 
 .cta:hover {
-  color: #050607;
+  color: #fff;
 }
 
 /* ---------- scroll hint ---------- */

@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useApp } from '@/components/providers/AppProviders';
+import { useMenu } from '@/components/providers/AppProviders';
 import { site } from '@/lib/content';
 import styles from './Nav.module.css';
 
 export default function Nav() {
-  const { menuOpen, toggleMenu } = useApp();
+  const { menuOpen, toggleMenu } = useMenu();
   const [clock, setClock] = useState('');
 
   // Live clock — updates every 30s.
