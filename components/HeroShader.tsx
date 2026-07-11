@@ -34,8 +34,9 @@ const FRAGMENT_SHADER = [
   ' vec3 base=vec3(0.02,0.024,0.028);',
   ' vec3 red=vec3(0.878,0.106,0.106);',
   ' vec3 col=base+f*f*0.07;',
-  // drifting grid
-  ' vec2 g=q*13.0; g.y+=uTime*0.32;',
+  // drifting grid — uTime keeps it alive at rest; uScroll links it to the
+  // page so the wireframe visibly answers scrolling
+  ' vec2 g=q*13.0; g.y+=uTime*0.32+uScroll*2.2;',
   ' vec2 gf=abs(fract(g)-0.5);',
   ' float gl=(1.0-smoothstep(0.0,0.06,gf.x))+(1.0-smoothstep(0.0,0.06,gf.y));',
   ' col+=vec3(0.10,0.11,0.12)*gl*0.16*(0.35+f);',

@@ -32,12 +32,14 @@ export default function GridPulse({
   const { reducedMotion } = useApp();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const glowRef = useRef<HTMLDivElement | null>(null);
+  const rushRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (reducedMotion) return;
     const root = rootRef.current;
     const glow = glowRef.current;
-    if (!root || !glow) return;
+    const rush = rushRef.current;
+    if (!root || !glow || !rush) return;
 
     let active = false;
     let raf = 0;
@@ -102,10 +104,49 @@ export default function GridPulse({
     };
     const pingInterval = setInterval(spawnPing, 2600 + Math.random() * 900);
 
+    // --- scroll shimmer: grid lines glint awake with scroll velocity ---
+    let rushOpacity = 0;
+    let rushRaf = 0;
+    let lastY = window.scrollY;
+    let lastT = performance.now();
+    let lastRushPing = 0;
+
+    const decay = () => {
+      rushOpacity *= 0.9;
+      if (rushOpacity < 0.02) {
+        rushOpacity = 0;
+        rush.style.opacity = '0';
+        rushRaf = 0;
+        return;
+      }
+      rush.style.opacity = rushOpacity.toFixed(3);
+      rushRaf = requestAnimationFrame(decay);
+    };
+
+    const onScroll = () => {
+      if (!active) return;
+      const now = performance.now();
+      const dy = window.scrollY - lastY;
+      const dt = Math.max(now - lastT, 1);
+      lastY = window.scrollY;
+      lastT = now;
+      const v = Math.abs(dy) / dt; // px per ms
+      rushOpacity = Math.min(0.45, Math.max(rushOpacity, v * 0.18));
+      if (!rushRaf) rushRaf = requestAnimationFrame(decay);
+      // fast scrolling occasionally sparks an extra ping — "data activity"
+      if (v > 1.4 && now - lastRushPing > 700) {
+        lastRushPing = now;
+        spawnPing();
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
     return () => {
       io.disconnect();
       if (finePointer) window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('scroll', onScroll);
       if (raf) cancelAnimationFrame(raf);
+      if (rushRaf) cancelAnimationFrame(rushRaf);
       if (idleTimer) clearTimeout(idleTimer);
       clearInterval(pingInterval);
     };
@@ -123,6 +164,11 @@ export default function GridPulse({
       <div
         ref={glowRef}
         className={styles.glow}
+        style={{ backgroundImage, backgroundSize: `${cell}px ${cell}px` }}
+      />
+      <div
+        ref={rushRef}
+        className={styles.rush}
         style={{ backgroundImage, backgroundSize: `${cell}px ${cell}px` }}
       />
     </div>
