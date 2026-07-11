@@ -65,7 +65,7 @@
 }
 
 .label {
-  font-size: 10.5px;
+  font-size: var(--text-label);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--red);
@@ -150,7 +150,7 @@
 }
 
 .stepNum {
-  font-size: 11px;
+  font-size: var(--text-label);
   letter-spacing: 0.16em;
   color: var(--red);
   min-width: 44px;
@@ -168,9 +168,9 @@
 
 .stepDesc {
   margin: 0;
-  font-size: 12px;
-  line-height: 1.65;
-  color: var(--ink-dim);
+  font-size: var(--text-body);
+  line-height: 1.7;
+  color: var(--ink-body);
   flex: 1 1 300px;
-  max-width: 420px;
+  max-width: 460px;
 }

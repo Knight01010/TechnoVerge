@@ -43,7 +43,7 @@
 }
 
 .lines {
-  font-size: 12px;
+  font-size: 13.5px;
   line-height: 2.1;
   color: var(--ink-dim);
 }
@@ -85,10 +85,10 @@
 }
 
 .tagline {
-  font-size: 11px;
+  font-size: var(--text-label);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: rgba(230, 232, 230, 0.55);
   text-align: right;
   padding-bottom: 12px;
 }

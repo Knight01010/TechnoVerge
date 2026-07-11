@@ -58,7 +58,7 @@ export const practiceThemes: PracticeTheme[] = [
   {
     bg: '#0A0C0E',
     ink: '#E6E8E6',
-    sub: 'rgba(230,232,230,.62)',
+    sub: 'rgba(230,232,230,.78)',
     line: 'rgba(230,232,230,.25)',
     num: 'rgba(230,232,230,.1)',
     grid: 'rgba(230,232,230,.045)',
@@ -68,7 +68,7 @@ export const practiceThemes: PracticeTheme[] = [
   {
     bg: '#E01B1B',
     ink: '#050607',
-    sub: 'rgba(5,6,7,.72)',
+    sub: 'rgba(5,6,7,.85)',
     line: 'rgba(5,6,7,.35)',
     num: 'rgba(5,6,7,.16)',
     grid: 'rgba(5,6,7,.08)',
@@ -78,7 +78,7 @@ export const practiceThemes: PracticeTheme[] = [
   {
     bg: '#101417',
     ink: '#E6E8E6',
-    sub: 'rgba(230,232,230,.62)',
+    sub: 'rgba(230,232,230,.78)',
     line: 'rgba(230,232,230,.25)',
     num: 'rgba(230,232,230,.1)',
     grid: 'rgba(230,232,230,.045)',

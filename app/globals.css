@@ -15,6 +15,12 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-inout: cubic-bezier(0.76, 0, 0.24, 1);
   --pad-x: clamp(20px, 4vw, 48px);
+  /* Typography scale — reading text must stay comfortably legible. */
+  --text-body: clamp(14.5px, 0.4vw + 12.5px, 16px);
+  --lh-body: 1.75;
+  --ink-body: rgba(230, 232, 230, 0.78);
+  --text-label: 12px;
+  --text-micro: 11px;
 }
 
 * {

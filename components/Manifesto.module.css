@@ -28,7 +28,7 @@
   position: absolute;
   top: 36px;
   left: clamp(20px, 6vw, 110px);
-  font-size: 10.5px;
+  font-size: var(--text-label);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--red);
@@ -99,9 +99,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 10px;
+  font-size: var(--text-micro);
   letter-spacing: 0.16em;
-  color: var(--ink-faint);
+  color: rgba(230, 232, 230, 0.5);
 }
 
 .scanTrack {
