@@ -167,6 +167,7 @@ export default function Practices() {
             <span className={styles.cornerTL} aria-hidden="true" />
             <span className={styles.cornerBR} aria-hidden="true" />
 
+            <div className={styles.panelInner}>
             <div className={styles.topRow}>
               <span
                 ref={(el) => {
@@ -204,6 +205,7 @@ export default function Practices() {
                   ))}
                 </div>
               </div>
+            </div>
             </div>
           </div>
         );

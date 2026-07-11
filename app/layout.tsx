@@ -48,8 +48,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${chakra.variable} ${plexMono.variable}`}>
+    // Font variable classes must live on <html>: globals.css composes them
+    // into --font-display/--font-mono at :root, which cannot see variables
+    // defined lower in the tree.
+    <html lang="en" className={`${chakra.variable} ${plexMono.variable}`}>
+      <body>
         <a href="#main" className="skip-link">
           Skip to content
         </a>

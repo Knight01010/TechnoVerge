@@ -8,11 +8,23 @@
   height: 100svh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   padding: 110px clamp(20px, 5vw, 80px) 60px;
   overflow: hidden;
   background: var(--p-bg);
   color: var(--p-ink);
+}
+
+/* Caps the composition on tall monitors so the numeral and the title block
+   keep the design's proportions instead of drifting to the screen edges. */
+.panelInner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  max-height: 720px;
 }
 
 .grid {
@@ -28,8 +40,8 @@
 .motif {
   position: absolute;
   right: clamp(-60px, -3vw, -20px);
-  bottom: 6%;
-  width: min(46vw, 540px);
+  bottom: 8%;
+  width: min(50vw, 660px);
   color: var(--p-motif);
   pointer-events: none;
 }
@@ -70,7 +82,7 @@
 .num {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(80px, 14vw, 220px);
+  font-size: clamp(80px, 15vw, 260px);
   line-height: 0.8;
   letter-spacing: -0.02em;
   color: var(--p-num);
@@ -97,7 +109,7 @@
   margin: 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(34px, 5.6vw, 92px);
+  font-size: clamp(34px, 5.6vw, 104px);
   line-height: 1;
   letter-spacing: 0;
   text-transform: uppercase;

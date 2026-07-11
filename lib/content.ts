@@ -63,7 +63,7 @@ export const practiceThemes: PracticeTheme[] = [
     num: 'rgba(230,232,230,.1)',
     grid: 'rgba(230,232,230,.045)',
     corner: '#E01B1B',
-    motif: 'rgba(224,27,27,.22)',
+    motif: 'rgba(224,27,27,.3)',
   },
   {
     bg: '#E01B1B',
@@ -73,7 +73,7 @@ export const practiceThemes: PracticeTheme[] = [
     num: 'rgba(5,6,7,.16)',
     grid: 'rgba(5,6,7,.08)',
     corner: '#050607',
-    motif: 'rgba(5,6,7,.28)',
+    motif: 'rgba(5,6,7,.34)',
   },
   {
     bg: '#101417',
@@ -83,7 +83,7 @@ export const practiceThemes: PracticeTheme[] = [
     num: 'rgba(230,232,230,.1)',
     grid: 'rgba(230,232,230,.045)',
     corner: '#E01B1B',
-    motif: 'rgba(230,232,230,.16)',
+    motif: 'rgba(230,232,230,.22)',
   },
 ];
 
