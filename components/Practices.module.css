@@ -1,0 +1,133 @@
+.section {
+  position: relative;
+}
+
+.panel {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 110px clamp(20px, 5vw, 80px) 60px;
+  overflow: hidden;
+  background: var(--p-bg);
+  color: var(--p-ink);
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--p-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--p-grid) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+.motif {
+  position: absolute;
+  right: clamp(-60px, -3vw, -20px);
+  bottom: 6%;
+  width: min(46vw, 540px);
+  color: var(--p-motif);
+  pointer-events: none;
+}
+
+.motifSvg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cornerTL {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  width: 22px;
+  height: 22px;
+  border-top: 2px solid var(--p-corner);
+  border-left: 2px solid var(--p-corner);
+}
+
+.cornerBR {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  width: 22px;
+  height: 22px;
+  border-bottom: 2px solid var(--p-corner);
+  border-right: 2px solid var(--p-corner);
+}
+
+.topRow {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(80px, 14vw, 220px);
+  line-height: 0.8;
+  letter-spacing: -0.02em;
+  color: var(--p-num);
+}
+
+.tag {
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--p-sub);
+  padding-top: 10px;
+}
+
+.bottomRow {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(34px, 5.6vw, 92px);
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  max-width: 640px;
+  color: var(--p-ink);
+}
+
+.body {
+  max-width: 400px;
+}
+
+.desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: var(--p-sub);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.chip {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 13px;
+  border: 1px solid var(--p-line);
+  color: var(--p-sub);
+}

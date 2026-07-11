@@ -1,0 +1,168 @@
+.hero {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* ---------- HUD ---------- */
+.topLabels {
+  position: absolute;
+  top: 88px;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(230, 232, 230, 0.5);
+}
+
+.sysStatus {
+  position: absolute;
+  top: 50%;
+  right: var(--pad-x);
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: rgba(230, 232, 230, 0.4);
+  text-align: right;
+  pointer-events: none;
+}
+
+.sysRed {
+  color: var(--red);
+}
+
+.sysBright {
+  color: rgba(230, 232, 230, 0.8);
+}
+
+/* ---------- content ---------- */
+.content {
+  position: relative;
+  z-index: 2;
+  padding: 0 var(--pad-x);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(230, 232, 230, 0.25);
+  padding: 8px 14px;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(230, 232, 230, 0.7);
+  margin-bottom: 22px;
+}
+
+.badgeDot {
+  width: 7px;
+  height: 7px;
+  background: var(--red);
+  animation: pulseDot 1.6s ease infinite;
+}
+
+.headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(44px, 9.2vw, 150px);
+  line-height: 0.96;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-transform: uppercase;
+}
+
+.lineWrap {
+  display: block;
+  overflow: hidden;
+}
+
+.line {
+  display: block;
+}
+
+.accent {
+  color: var(--red);
+}
+
+/* ---------- sub row ---------- */
+.sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 30px 0;
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.9s ease 0.1s,
+    transform 0.9s var(--ease-out) 0.1s;
+}
+
+.subVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.subCopy {
+  margin: 0;
+  max-width: 460px;
+  font-size: 13px;
+  line-height: 1.75;
+  color: rgba(230, 232, 230, 0.68);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 17px 30px;
+  background: var(--red);
+  color: #050607;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: transform 0.25s var(--ease-out);
+  will-change: transform;
+}
+
+.cta:hover {
+  color: #050607;
+}
+
+/* ---------- scroll hint ---------- */
+.scrollHint {
+  position: absolute;
+  left: 50%;
+  bottom: 112px;
+  transform: translateX(-50%);
+  z-index: 2;
+  font-size: 9.5px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(230, 232, 230, 0.4);
+  animation: blink 2.4s ease infinite;
+}
+
+/* Safety net: content readable even if JS reveal never runs. */
+@media (prefers-reduced-motion: reduce) {
+  .sub {
+    opacity: 1;
+    transform: none;
+  }
+}

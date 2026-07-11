@@ -1,0 +1,29 @@
+.band {
+  position: relative;
+  z-index: 3;
+  background: var(--red);
+  color: #050607;
+  overflow: hidden;
+  padding: 13px 0;
+}
+
+.skew {
+  will-change: transform;
+}
+
+.track {
+  display: flex;
+  white-space: nowrap;
+  width: max-content;
+  animation: marquee 24s linear infinite;
+  will-change: transform;
+}
+
+.item {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-right: 40px;
+}

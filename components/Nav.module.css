@@ -1,0 +1,96 @@
+/* Fixed logo mark — stays above the fullscreen menu (z 5001). */
+.logo {
+  position: fixed;
+  top: 20px;
+  left: var(--pad-x);
+  z-index: 5001;
+  display: block;
+  transition: opacity 0.3s;
+}
+
+.logoImg {
+  height: 32px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.45));
+}
+
+/* Nav bar — difference blend so it inverts over light/red panels. */
+.bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px var(--pad-x);
+  mix-blend-mode: difference;
+  color: var(--ink);
+}
+
+/* While the menu is open, drop the blend so the bar reads normally
+   on the dark menu background. */
+.barMenuOpen {
+  mix-blend-mode: normal;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  margin-left: 44px;
+}
+
+.wordmark:hover {
+  color: var(--ink);
+}
+
+.underscore {
+  color: var(--red);
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.clock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  color: var(--ink-dim);
+}
+
+.clockDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: pulseDot 1.6s ease infinite;
+}
+
+.menuBtn {
+  background: none;
+  border: 1px solid rgba(230, 232, 230, 0.35);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.3s;
+}
+
+.menuBtnOpen {
+  border-color: rgba(224, 27, 27, 0.6);
+}

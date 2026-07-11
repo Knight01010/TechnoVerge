@@ -1,0 +1,40 @@
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* Static fallback when WebGL is unavailable or reduced motion is preferred:
+   dark gradient base + faint 13-column grid + vignette, echoing the shader. */
+.fallback {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(230, 232, 230, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(230, 232, 230, 0.05) 1px, transparent 1px),
+    radial-gradient(
+      120% 90% at 50% 20%,
+      #0b0e11 0%,
+      #070809 55%,
+      var(--bg) 100%
+    );
+  background-size:
+    calc(100% / 13) calc(100% / 13),
+    calc(100% / 13) calc(100% / 13),
+    100% 100%;
+}
+
+.fallback::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    130% 100% at 50% 50%,
+    transparent 45%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+}
