@@ -6,6 +6,7 @@ import { gsap } from 'gsap';
 import { useApp, useMenu } from '@/components/providers/AppProviders';
 import { menuLinks, site } from '@/lib/content';
 import { scramble } from '@/lib/scramble';
+import GridPulse from '@/components/GridPulse';
 import styles from './FullscreenMenu.module.css';
 
 export default function FullscreenMenu() {
@@ -156,6 +157,7 @@ export default function FullscreenMenu() {
     >
       {/* decor: 72px grid */}
       <div className={styles.grid} aria-hidden="true" />
+      <GridPulse />
 
       {/* decor: giant watermark logo, right */}
       <div className={styles.watermark} aria-hidden="true">

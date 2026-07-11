@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { services, servicesCta } from '@/lib/content';
 import { useApp } from '@/components/providers/AppProviders';
+import GridPulse from '@/components/GridPulse';
 import styles from './Services.module.css';
 
 /**
@@ -100,6 +101,12 @@ export default function Services() {
     <section id="services" ref={sectionRef} className={sectionClass}>
       <div ref={viewportRef} className={styles.viewport}>
         <div className={styles.dots} aria-hidden="true" />
+        <GridPulse
+          variant="dots"
+          cell={26}
+          lineColor="rgba(230, 232, 230, 0.2)"
+          pingColor="rgba(224, 27, 27, 0.55)"
+        />
         <div className={styles.ghost} aria-hidden="true">
           MODULES///
         </div>

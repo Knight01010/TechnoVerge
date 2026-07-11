@@ -6,6 +6,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useApp } from '@/components/providers/AppProviders';
 import { site, footerLinks } from '@/lib/content';
+import GridPulse from '@/components/GridPulse';
 import styles from './Contact.module.css';
 
 export default function Contact() {
@@ -40,6 +41,7 @@ export default function Contact() {
   return (
     <section id="contact" ref={sectionRef} className={styles.section}>
       <div className={styles.grid} aria-hidden="true" />
+      <GridPulse />
       <div className={styles.glow} aria-hidden="true" />
 
       {/* Rotating circular badge */}

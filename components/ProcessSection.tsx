@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { processSteps } from '@/lib/content';
 import { useApp } from '@/components/providers/AppProviders';
+import GridPulse from '@/components/GridPulse';
 import styles from './ProcessSection.module.css';
 
 const BINARY = [
@@ -85,6 +86,7 @@ export default function ProcessSection() {
   return (
     <section id="process" ref={sectionRef} className={styles.section}>
       <div className={styles.grid} aria-hidden="true" />
+      <GridPulse />
 
       <div className={styles.binary} aria-hidden="true">
         <span className={`${styles.binaryCol} ${styles.binaryRed}`}>

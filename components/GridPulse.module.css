@@ -1,0 +1,43 @@
+.root {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  mask-image: radial-gradient(
+    300px circle at var(--gx, -999px) var(--gy, -999px),
+    rgba(0, 0, 0, 0.9),
+    transparent 72%
+  );
+  -webkit-mask-image: radial-gradient(
+    300px circle at var(--gx, -999px) var(--gy, -999px),
+    rgba(0, 0, 0, 0.9),
+    transparent 72%
+  );
+}
+
+.ping {
+  position: absolute;
+  opacity: 0;
+  animation: gridPing 1.6s ease-out forwards;
+}
+
+@keyframes gridPing {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  18% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}

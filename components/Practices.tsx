@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { practices, practiceThemes } from '@/lib/content';
 import { useApp } from '@/components/providers/AppProviders';
+import GridPulse from '@/components/GridPulse';
 import styles from './Practices.module.css';
 
 export default function Practices() {
@@ -123,6 +124,14 @@ export default function Practices() {
             style={vars}
           >
             <div className={styles.grid} aria-hidden="true" />
+            <GridPulse
+              lineColor={
+                i === 1 ? 'rgba(5, 6, 7, 0.18)' : 'rgba(230, 232, 230, 0.14)'
+              }
+              pingColor={
+                i === 1 ? 'rgba(5, 6, 7, 0.5)' : 'rgba(224, 27, 27, 0.5)'
+              }
+            />
 
             {/* Circuit-diagram motif */}
             <div

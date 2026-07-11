@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { manifestoText } from '@/lib/content';
 import { useApp } from '@/components/providers/AppProviders';
+import GridPulse from '@/components/GridPulse';
 import styles from './Manifesto.module.css';
 
 type Word = { text: string; accent: boolean };
@@ -73,6 +74,7 @@ export default function Manifesto() {
     <section id="manifesto" ref={sectionRef} className={styles.section}>
       <div className={styles.sticky}>
         <div className={styles.grid} aria-hidden="true" />
+        <GridPulse />
 
         <div className={styles.label} aria-hidden="true">
           {'/// threat report — keep scrolling'}
